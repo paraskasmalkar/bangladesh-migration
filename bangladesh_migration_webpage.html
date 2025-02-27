@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+
+
+<head>
+
+    <meta charset="UTF-8" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+    <title>Climate Migration Predictor</title>
+
+    <style>
+
+        body 
+        {
+            font-family: Arial, sans-serif;
+            margin: 30px;
+            background: #f9f9f9;
+        }
+
+        .dashboard 
+        {
+            background: #ffffff;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            max-width: 700px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        h1 
+        {
+            font-size: 2em;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        label 
+        {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .slider-container 
+        {
+            margin-bottom: 20px;
+        }
+
+        .slider-container input[type=range] 
+        {
+            width: 100%;
+        }
+
+        #tempValue 
+        {
+            font-weight: bold;
+            margin-left: 10px;
+        }
+
+        button 
+        {
+            padding: 10px 20px;
+            cursor: pointer;
+            background: #007BFF;
+            color: #fff;
+            border: none;
+            border-radius: 3px;
+            margin-top: 10px;
+        }
+
+        button:hover 
+        {
+            background: #0056b3;
+        }
+
+        #assumedPopulation 
+        {
+            margin-top: 20px;
+            font-style: italic;
+        }
+
+        #result 
+        {
+            margin-top: 20px;
+            font-size: 1.1em;
+            color: #333;
+        }
+
+        .scenario 
+        {
+            margin-top: 20px;
+            background: #f0f0f0;
+            padding: 15px;
+            border-radius: 5px;
+        }
+
+        .scenario h3 
+        {
+            margin-top: 0;
+        }
+
+        p 
+        {
+            line-height: 1.6em;
+        }
+
+    </style>
+
+</head>
+
+
+
+
+
+
+
+<body>
+
+    <div class="dashboard">
+        <h1>Climate Migration Predictor</h1>
+        <p>Climate change is predicted to cause a significant amount of migration, both within and through international borders, in the coming decades. This webpage allows you to see the results of a simplified model predicting climate change-based migration in the country of Bangladesh, situated in a region uniquely vulnerable to climate change.</p>
+        <p>Using this tool, you can predict the net migration in Bangladesh at a particular temperature, and examine its effects.</p>
+        
+        <div class="slider-container">
+            <label for="tempSlider">Select Temperature (°C)</label>
+            <input type="range" id="tempSlider" min="20" max="60" value="20" step="1" oninput="updateTempDisplay(this.value)" />
+            <span id="tempValue">20</span>°C
+        </div>
+        
+        <button onclick="calculateMigration()">Calculate Net Migration</button>
+        
+        <p id="assumedPopulation">Assumed population of Bangladesh: 207,000,000</p>
+        
+        <div id="result"></div>
+        <div id="scenario" class="scenario" style="display:none;"></div>
+    </div>
+
+    <script>
+        const scenarios = [
+
+            {
+                range: [20, 30],
+                estimated: "-155,000",
+                title: "20-30 degrees Celsius",
+                description: `
+
+                    20-30 °C is already the average annual temperature in Bangladesh. As temperature rises slightly, agricultural yields decline, and Bangladesh's production of its main food crops of rice and wheat declines. This temperature still does not pose a major threat to the country's infrastructure, and it is still possible for people to live healthy lives in this temperature range.
+
+                    The predicted out-migration of 155,000 people has manageable effects on neighboring countries like India and Myanmar. Migrants mostly consist of skilled workers who seek better opportunities. These migrants would most likely find employment in major urban areas such as the eastern Indian city of Kolkata. The concentration of these people in a limited region may cause resource allocation issues, but overall this level of migration is not likely to cause major unrest or geopolitical tensions.
+                `
+            },
+
+            {
+                range: [30, 40],
+                estimated: "-12,500,000",
+                title: "30-40 degrees Celsius",
+                description: `
+                    Bangladesh already occasionally hits this range of 30-40 °C during the hot summer months. If this becomes the annual average, it would cause sustained, deadly heat waves that would be disastrous for low-income communities. Widespread water shortages would become common, and diseases like cholera would run rampant in unsanitary conditions. Coastal regions would experience worsening conditions from sea level rise and increased emigration, while wealthier urban areas would likely still remain stable.
+
+                    A predicted emigration of 12.5 million people would pose a serious challenge to the neighboring countries of India and Myanmar. Urban areas would face skyrocketing housing and food demands, while large-scale refugee camps may be set up to handle the influx of people. Social services in the neighboring countries would be stretched far beyond their capacity, leading to food insecurity among the refugees. Political tensions would rise as countries would struggle to balance resource shortages with their humanitarian obligations. International aid from beyond the region would be critical.
+                `
+            },
+
+            {
+                range: [40, 50],
+                estimated: "-47,000,000",
+                title: "40-50 degrees Celsius",
+                description: `
+                    Sustained exposure to temperatures greater than 40 °C can directly cause harm to the human body by means of heat stress and dehydration. Heat waves would claim the lives of thousands to tens of thousands of people annually. Urban infrastructure, not designed to withstand such extreme heat, would begin to fail. Entire communities would abandon rural and coastal areas, and cities in Bangladesh would face serious resource shortages.
+
+                    An exodus of 47,000,000 people would affect countries throughout South Asia, including India, Myanmar, and even potentially further away countries such as Thailand, Laos or China. Massive refugee camps would have to be set up throughout these countries, and national governments would seriously struggle to find the resources to support this unprecedentedly large number of refugees. These countries would be unable to manage such a large refugee movement without global financial support.
+                `
+            },
+
+            {
+                range: [50, 60],
+                estimated: "-104,000,000",
+                title: "50-60 degrees Celsius",
+                description: `
+                    At this temperature, large portions of Bangladesh would be uninhabitable even in the short term. The entire country's agricultural activity would cease, and several major cities would be submerged in water. A significant portion of Bangladesh's population would be forced to relocate internationally, though even Bangladesh's neighboring countries would face similar problems, which would reduce their capacity to manage refugee flows.
+
+                    With 104 million people migrating, neighboring countries would face catastrophic impacts. India’s eastern states would collapse under the pressure, with millions of refugees overwhelming infrastructure, housing, and food supplies. Myanmar, which already faces political instability, would descend into chaos. The international community would be forced to establish large-scale global resettlement programs, which would be overwhelmed. Tensions between nations would rise, with border conflicts erupting as governments would attempt and struggle to protect their territories from the unprecedented scale of migration. It is plausible that military conflicts could erupt over refugee movements and control over resources such as water and fertile land.
+                `
+            }
+
+        ];
+
+        const population = 207000000; // total population
+
+        function updateTempDisplay(val) 
+        {
+            document.getElementById('tempValue').textContent = val;
+        }
+
+        function calculateMigration() 
+        {
+            const x = parseFloat(document.getElementById('tempSlider').value);
+            const y = (-0.538 * x * x) + (26.3 * x) - 322; 
+            const yPerCapita = y / 1000;
+            const totalMigration = Math.round(yPerCapita * population);
+            const resultDiv = document.getElementById('result');
+
+            resultDiv.innerHTML = `
+                <p><strong>Predicted Net Migration (per capita):</strong> ${yPerCapita.toFixed(5)}</p>
+                <p><strong>Predicted Net Migration (total):</strong> ${totalMigration.toLocaleString()}</p>
+            `;
+
+            let chosenScenario = null;
+            for(const scenario of scenarios) 
+            {
+                if(x >= scenario.range[0] && x < scenario.range[1]) 
+                {
+                    chosenScenario = scenario;
+                    break;
+                }
+            }
+
+            if(!chosenScenario && x === 60) 
+            {
+                chosenScenario = scenarios[scenarios.length - 1];
+            }
+
+            const scenarioDiv = document.getElementById('scenario');
+            if(chosenScenario) 
+            {
+                scenarioDiv.style.display = 'block';
+                scenarioDiv.innerHTML = `
+                    <h3>${chosenScenario.title}</h3>
+                    <p><strong>Estimated Out-Migration for this Range:</strong> ${chosenScenario.estimated}</p>
+                    <p>${chosenScenario.description}</p>
+                `;
+            } 
+            else 
+            {
+                scenarioDiv.style.display = 'none';
+            }
+        }
+
+    </script>
+
+</body>
+
+</html>
